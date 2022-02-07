@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf8">
+        <title>欢迎来到论坛</title>
+        <style>
+            .action {
+                position:absolute;
+                left:300px;
+            }
+        </style>
+    </head>
+    <body>
+        <div>用户:<%= session %></div>
+        <button type="button" class="post">发帖</button>
+        <div class="bbsbox">
+            <ul>
+                 <% for(let i = 0,max = content.length; i < max; i++) { %>
+                     <fieldset>
+                             <!-- <a href="javascript:void(0);" onclick="login(event)"><%= content[i].title %></a> -->
+                             <a href="/contont?id=<%=content[i].con_id%>"><%= content[i].title %></a>
+                             <a class="action">发帖人:<%=content[i].con_name%></a>
+                    </fieldset>
+                 <% } %>
+            </ul>
+        </div>
+    </body>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+    <script>
+        // <%= session%>
+        function login(e) {
+            let title = $(e.target).text();
+            let user = document.querySelector("body > div:nth-child(1)").textContent.slice(3);
+
+            let Econtont = {
+                title:title,
+                user:user
+            };
+           
+            $.ajax({
+                url:'/contont',
+                type:'GET',
+                data:Econtont
+            }).then(res => {
+                console.log(res);
+                // $('html').html(res); 
+            });
+
+            /* $.ajaxSettings.async = false;
+            $.get('/contont',Econtont,function(res){
+    	        console.log(res);
+            }) */
+        };
+
+        $('.post').click(() => {
+            /* $.ajax({
+                url:'fatie',
+                type:'POST',
+            }).then(() => {
+                
+            }); */
+            window.location.replace('/fatie');
+        })
+    </script>
+</html>

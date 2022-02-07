@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>发帖页面</title>
+    </head>
+    <body>
+        
+        <fieldset>
+            <div>发帖人:<%=user%></div>
+        </fieldset>
+        <fieldset>
+            <form action="">
+                <span>标题：</span>
+                <input type="text" name="title" placeholder="请输入帖子标题">
+                <span>内容：</span>
+                <textarea cols="30" rows="10" name="content" placeholder="请输入帖子内容"></textarea>
+            </form>
+             <button class="post">发帖</button>
+        </fieldset>
+    </body>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+    <script>
+        $('.post').click(() => {
+            console.log('%c [ $("form").serialize() ]-26', 'font-size:13px; background:pink; color:#bf2c9f;', $('form').serialize())
+            $.ajax({
+                url:'btnpost',
+                type:'POST',
+                data:$('form').serialize()
+            }).then(res => {
+                if(res.message === '成功') {
+                    alert('发帖成功');
+                    window.location.replace('/index');
+                }
+            })
+        })
+    </script>
+</html>

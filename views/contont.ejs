@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title><%= contont[0].title %></title>
+    </head>
+    <body>
+        
+        <fieldset>
+            <div>发帖人:<%=contont[0].con_name %>     </div>
+            <a class='post_id' id="<%=contont[0].id%>"></a>
+            <h3 class="title"><%= contont[0].title %></h3>
+            <div class="content"><%= contont[0].content %></div>
+            <% if(contont[0].con_name == session) { %>
+            <div>
+                    <a href="javascript:void(0);" onclick="con_edit(event)">编辑帖子</a>
+                    <a href="javascript:void(0);" onclick="con_del(event)">删除帖子</a>
+             </div>
+             <% } %>
+        </fieldset>
+        <tbody>
+        <div class="text">
+            <ul>
+                <% if(contont[0].con_id) { %>
+                 <% for(let i = 0,max = contont.length; i < max; i++) { %>
+                     <fieldset>
+                             <a class="action">用户:<%=contont[i].name%></a>
+                             <a class='real<%=i+1%>' id="<%=contont[i].read_id%>"></a>
+                             <div>
+                                <div class="pinglun<%=i+1%>">
+                                    <%= contont[i].text %>
+                                 </div>
+                                 <div>
+                                    <%=i+1%>楼
+                                 </div>
+                                 <div>
+                                    <% if(contont[i].name == session) { %>
+                                        <a href="javascript:void(0);" onclick="edit(event)">编辑</a>
+                                        <a href="javascript:void(0);" onclick="del(event)">删除</a>
+                                       <% } %>
+                                 </div>
+                             </div>
+                    </fieldset>
+                 <% } %>
+                <% } %>
+            </ul>
+        </div>
+        </tbody>
+        <fieldset>
+            
+                <span class="session" id="<%=session%>">用户:<%=session%></>
+                <span>评论内容:</span>
+                <textarea cols="30" rows="10" class="pingluntext" placeholder="请输入评论"></textarea>
+                <button class="post">评论</button>
+        </fieldset>
+    </body>
+    </body>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+    <script>
+        // 
+        // 编辑帖子的前端
+        // 
+        function con_edit(e){
+            if($(e.target).text() === '编辑帖子'){
+                $('.title').attr('contenteditable', true);
+                $('.content').attr('contenteditable', true);
+                $(e.target).text('保存编辑');
+            } else if($(e.target).text() === '保存编辑'){
+                
+                let title = $('.title').text();
+                let content = $('.content').text();
+                let id = $('.post_id').attr('id');
+                $('.title').attr('contenteditable', false);
+                $('.content').attr('contenteditable', false);
+                let params = {
+                    title:title,
+                    content:content,
+                    id:id
+                };
+
+                $.ajax({
+                    url:'/con_edit',
+                    type:'POST',
+                    data:params
+                }).then(res => {
+                    if(res.message === '成功'){
+                        alert('编辑成功');
+                        location.reload();
+                        }
+                    });
+                $(e.target).text('编辑帖子');
+            }
+         }
+        // 
+        // 删除帖子的前端
+        // 
+        function con_del(e) {
+            let id = $('.post_id').attr('id');
+            $.ajax({
+                url:'/con_del',
+                type:'POST',
+                data:{
+                    id:id
+                }
+            }).then(res => {
+                if(res.message === '成功'){
+                    alert('删除成功');
+                    location.replace('/index');
+                    }
+                });
+        } 
+        // 
+        // 编辑评论的前端
+        // 
+        function edit(e){
+            let text = $(e.target).parent().siblings();
+            let build = text[1].innerText.replace('楼','');
+            let real_id = $(`.real${build}`).attr('id');
+            // console.log('%c [  ]-47', 'font-size:13px; background:pink; color:#bf2c9f;', real_id);
+            
+            if($(e.target).text() === '编辑'){
+                $(`.pinglun${build}`).attr('contenteditable', true);
+                $(e.target).text('保存');
+                return;
+            }
+            if($(e.target).text() === '保存'){
+                let params = {
+                    // text:text[0].text().replace(/\s*/g,""),
+                    pinglun:text[0].innerText,
+                    con_id:window.location.search.slice(4),
+                    real_id
+                };
+                $(`.pinglun${build}`).attr('contenteditable', false);
+                $.ajax({
+                    url:'/editText',
+                    type:'POST',
+                    data:params
+                });
+                $(e.target).text('编辑');
+                return;
+            }
+        };
+        // 
+        // 删除评论的前端
+        // 
+        function del(e) {
+            let text = $(e.target).parent().siblings();
+            let build = text[1].innerText.replace('楼','');
+            let real_id = $(`.real${build}`).attr('id');
+
+            let params = {
+                real_id:real_id
+            }
+            $.ajax({
+                url:'/btndel',
+                type:'POST',
+                data:params
+            }).then(res => {
+                if(res.message === '成功'){
+                    alert('删除成功');
+                    location.reload();
+                }
+            });
+        };
+        // 
+        // 发表评论的前端
+        // 
+        $('.post').click(() => {
+            let session = $('.session').attr('id');
+            let txt = $('.pingluntext').val();
+            let params = {
+                session:session,
+                txt:txt,
+                con_id:window.location.search.slice(4)
+            };
+            $.ajax({
+                url:'/pspinglun',
+                type:'POST',
+                data:params
+            }).then(res => {
+                if(res.message === '成功'){
+                    alert('评论成功');
+                    location.reload();
+                }
+            });
+        })
+    </script>
+</html>

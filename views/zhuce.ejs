@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>注册页面</title>
+    <style>
+
+    </style>
+  </head>
+  <body>
+    <fieldset>开始注册
+        <form action="">
+            <div>
+              <span>账号:</span>
+              <input type="text" name="username" placeholder="输入账号">
+            </div>
+            <div>
+              <span>密码:</span>
+              <input type="password" name="password" placeholder="输入密码">
+            </div>
+         </form>
+     <input type="button" id="btnzhuce" value="注册">
+    </fieldset>
+  </body>
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+  <!-- <script src="./javascripts/template.js"></script> -->
+  <script>
+      $('#btnzhuce').click(() => {
+        console.log($('form').serialize());
+          $.ajax({
+              type:'POST',
+              url:'/btnzhuce',
+              data:$('form').serialize()
+          }).then(res => {
+              if(res.message){
+                  alert("注册成功");
+                  window.location.replace('/');
+              } else {
+                  alert('注册失败,请重新再试');
+                  window.location.replace('/zhuce');
+              }
+          })
+      })
+  </script>
+</html>
