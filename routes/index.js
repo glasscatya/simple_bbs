@@ -39,7 +39,6 @@ router.get('/zhuce', (req, res) => {
 router.get('/index', (req, res) => {
   // 未登录获取session 无法访问主页 跳转至登陆界面
     if(req.session.userinfo){
-
       let sql = 'select * from content';
       conn.query(sql,(err,data) => {
         if(err) throw err;
